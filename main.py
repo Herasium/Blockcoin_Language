@@ -1,5 +1,8 @@
 from flask import Flask, request, jsonify
 from langdetect import detect_langs
+import os
+
+key = os.environ.get("key")
 
 app = Flask(__name__)
 
@@ -12,6 +15,8 @@ def detect_language():
     if request.is_json:
         data = request.get_json()
         if 'text' in data:
+            if data["key"] != key:
+                return jsonify({"error": "Invalid Key"}), 403
             text = data['text']
             detected_langs = detect_langs(text)
             detected_langs_dict = {str(lang.lang): lang.prob for lang in detected_langs}
